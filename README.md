@@ -1,16 +1,24 @@
 # SkillHub-Pro
 
 Polyglot learning platform with:
-- Next.js frontend
-- Node.js gateway + Auth
-- Python (FastAPI) AI service
-- Go analytics service
-- Java course service
+- **Frontend**: Next.js 14 + Material UI (MUI)
+- **Auth Service**: Node.js + Express + MongoDB (MVC Architecture)
+- **Other Services**: Python (AI), Go (Analytics), Java (Course)
 
 ## Quick start
-1. Run `./init-skillhub-backend.sh` to generate backend scaffold.
-2. Copy `.env.example` → `.env` and set secrets.
-3. Run `docker compose build && docker compose up`.
-4. Visit `http://localhost:4000/health`.
+1.  **Database**: Ensure MongoDB is running (port 27017).
+2.  **Backend**:
+    ```bash
+    cd backend/services/auth-service
+    npm install && npm run dev
+    ```
+3.  **Frontend**:
+    ```bash
+    cd frontend
+    npm install && npm run dev
+    ```
+4.  Visit `http://localhost:3000`.
 
-See `/docs/README.md` for more.
+## Documentation
+- [Walkthrough](walkthrough.md): Detailed guide on running the app and verifying features.
+- [Developer Guide](developer.md): Architecture and service details.
