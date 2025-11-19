@@ -30,3 +30,13 @@ services:
     build: ./backend/services/user-service
     ports:
       - "8080:8080"
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

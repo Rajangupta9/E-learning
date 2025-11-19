@@ -36,12 +36,13 @@ The `docker-compose.yml` file defines the following services:
 
 | Service             | Port   | Language    | Description                                      |
 | ------------------- | ------ | ----------- | ------------------------------------------------ |
-| `gateway`           | `4000` | Node.js     | The main entry point for the backend.            |
-| `auth-service`      | `4001` | Node.js     | Handles user authentication and authorization.   |
-| `ai-service`        | `5001` | Python      | Provides AI-powered features.                    |
-| `analytics-service` | `6001` | Go          | Collects and processes analytics data.           |
-| `course-service`    | `7001` | Java        | Manages courses and course content.              |
-| `rust-service`      | -      | Rust        | A Rust-based service. (Purpose to be determined) |
+| `gateway`           | `4000` | Node.js     | API Gateway                                      |
+| `auth-service`      | `4001` | Node.js     | Authentication Service (Express + MongoDB)       |
+| `user-service`      | `8080` | Node.js     | User Management Service                          |
+| `ai-service`        | `5000` | Python      | AI/ML Service (FastAPI)                          |
+| `analytics-service` | `6000` | Go          | Analytics Service                                |
+| `course-service`    | `7000` | Java        | Course Management Service                        |
+| `mongo`             | `27017`| Database    | MongoDB (User Data)                              |
 
 ### Running Services Individually
 
