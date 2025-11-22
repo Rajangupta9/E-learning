@@ -14,35 +14,21 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const authService = {
   login: async (credentials: any) => {
-    try {
-      const response = await apiClient.post('/auth/login', credentials);
-      return response.data;
-    } catch (error) {
-      console.warn('Backend unreachable, switching to Demo Mode');
-      await delay(1000); // Simulate network delay
-      return {
-        accessToken: DEMO_TOKEN,
-        user: { ...DEMO_USER, email: credentials.email },
-      };
-    }
+    const response = await apiClient.post('/auth/login', credentials);
+    return response.data;
   },
 
   signup: async (userData: any) => {
-    try {
-      const response = await apiClient.post('/auth/register', userData);
-      return response.data;
-    } catch (error) {
-      console.warn('Backend unreachable, switching to Demo Mode');
-      await delay(1000);
-      return {
-        accessToken: DEMO_TOKEN,
-        user: {
-          ...DEMO_USER,
-          email: userData.email,
-          name: `${userData.firstName} ${userData.lastName}`
-        },
-      };
-    }
+    // Transform frontend data to match backend expectations
+    const payload = {
+      email: userData.email,
+      password: userData.password,
+      name: userData.firstName && userData.lastName
+        ? `${userData.firstName} ${userData.lastName}`
+        : userData.name || userData.firstName || userData.lastName || 'User'
+    };
+    const response = await apiClient.post('/auth/register', payload);
+    return response.data;
   },
 
   logout: async () => {
@@ -52,17 +38,7 @@ export const authService = {
   },
 
   getMe: async () => {
-    try {
-      const response = await apiClient.get('/auth/me');
-      return response.data;
-    } catch (error) {
-      // If token is demo token, return demo user
-      const token = localStorage.getItem('token');
-      if (token === DEMO_TOKEN) {
-        const storedUser = localStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : DEMO_USER;
-      }
-      throw error;
-    }
+    const response = await apiClient.get('/auth/me');
+    return response.data;
   },
 };
