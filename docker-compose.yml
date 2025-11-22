@@ -6,37 +6,60 @@ services:
       - "4000:4000"
     depends_on:
       - auth-service
-      - ai-service
-      - analytics-service
-      - course-service
       - user-service
+      - content-service
+      - payment-service
+      - postgres
+      - redis
+
   auth-service:
     build: ./backend/services/auth-service
     ports:
       - "4001:4001"
-  ai-service:
-    build: ./backend/services/ai-service
-    ports:
-      - "5001:5001"
-  analytics-service:
-    build: ./backend/services/analytics-service
-    ports:
-      - "6001:6001"
-  course-service:
-    build: ./backend/services/course-service
-    ports:
-      - "7001:7001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/skillhub
+      - REDIS_URL=redis://redis:6379
+
   user-service:
     build: ./backend/services/user-service
     ports:
-      - "8080:8080"
+      - "8080:8080" # Check if this port conflicts with others
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/skillhub
 
-  mongo:
-    image: mongo:latest
+  content-service:
+    build: ./backend/services/content-service
     ports:
-      - "27017:27017"
+      - "8082:8080" # Go service on 8080 internal, mapped to 8082
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/skillhub
+      - REDIS_URL=redis://redis:6379
+
+  payment-service:
+    build: ./backend/services/payment-service
+    ports:
+      - "8081:8080" # Java service on 8080 internal, mapped to 8081
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/skillhub
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=skillhub
     volumes:
-      - mongo-data:/data/db
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
 
 volumes:
-  mongo-data:
+  postgres-data:
+  redis-data:

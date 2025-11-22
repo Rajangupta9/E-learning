@@ -1,46 +1,19 @@
 'use client';
-import React, { useState } from 'react';
-import {
-  Container,
-  Box,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Link,
-  Alert,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+
+import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/redux/hooks';
-import { setCredentials } from '@/redux/slices/authSlice';
+import { Box, Button, TextField, Typography, Paper, Container, Alert, CircularProgress, InputAdornment, IconButton, Grid } from '@mui/material';
+import { Visibility, VisibilityOff, Email, Lock, ArrowBack } from '@mui/icons-material';
 import { authService } from '@/services/authService';
-import { useSnackbar } from '@/context/SnackbarContext';
-import { ROUTES } from '@/constants/routes';
 
 export default function LoginPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { showSnackbar } = useSnackbar();
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setError('');
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,110 +21,130 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await authService.login(formData);
-      dispatch(setCredentials({ user: response.user, token: response.token }));
-      showSnackbar('Login successful!', 'success');
-      
-      // Redirect based on role
-      const dashboardPath = `/dashboard/${response.user.role}`;
-      router.push(dashboardPath);
+      const data = await authService.login({ email, password });
+      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
-      showSnackbar('Login failed', 'error');
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Card sx={{ width: '100%' }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom align="center">
-              Welcome Back
-            </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4 }}>
-              Sign in to your account to continue
-            </Typography>
+    <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.default' }}>
+      {/* Left Side - Image/Brand */}
+      <Box sx={{
+        display: { xs: 'none', md: 'flex' },
+        width: '50%',
+        bgcolor: 'primary.main',
+        position: 'relative',
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        p: 8
+      }}>
+        <Box sx={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)', filter: 'blur(60px)' }} />
+        <Box sx={{ position: 'absolute', bottom: -50, left: -50, width: 300, height: 300, borderRadius: '50%', bgcolor: 'rgba(0,0,0,0.1)', filter: 'blur(60px)' }} />
 
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
-              </Alert>
-            )}
+        <Box sx={{ position: 'relative', zIndex: 1, maxWidth: 480 }}>
+          <Typography variant="h3" fontWeight="800" gutterBottom>Welcome Back!</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 400, opacity: 0.9, lineHeight: 1.6 }}>
+            "Education is the passport to the future, for tomorrow belongs to those who prepare for it today."
+          </Typography>
+          <Box sx={{ mt: 4, display: 'flex', gap: 1 }}>
+            <Box sx={{ width: 40, height: 4, bgcolor: 'white', borderRadius: 2 }} />
+            <Box sx={{ width: 10, height: 4, bgcolor: 'rgba(255,255,255,0.3)', borderRadius: 2 }} />
+            <Box sx={{ width: 10, height: 4, bgcolor: 'rgba(255,255,255,0.3)', borderRadius: 2 }} />
+          </Box>
+        </Box>
+      </Box>
 
-            <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                required
-                autoComplete="email"
-              />
+      {/* Right Side - Form */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', p: { xs: 4, md: 8 } }}>
+        <Container maxWidth="xs">
+          <Button startIcon={<ArrowBack />} component={Link} href="/" sx={{ mb: 4, color: 'text.secondary' }}>
+            Back to Home
+          </Button>
 
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                required
-                autoComplete="current-password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" fontWeight="800" gutterBottom>Sign In</Typography>
+            <Typography color="text.secondary">Enter your details to access your account</Typography>
+          </Box>
 
-              <Box sx={{ textAlign: 'right', mb: 2 }}>
-                <Link href={ROUTES.FORGOT_PASSWORD} variant="body2">
-                  Forgot password?
-                </Link>
-              </Box>
+          {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={loading}
-                sx={{ mb: 2 }}
-              >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </Button>
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><Email color="action" /></InputAdornment>,
+              }}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><Lock color="action" /></InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 3 }}
+            />
 
-              <Typography variant="body2" align="center">
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+              <Link href="#" style={{ textDecoration: 'none', color: '#4F46E5', fontWeight: 600, fontSize: '0.875rem' }}>
+                Forgot Password?
+              </Link>
+            </Box>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={loading}
+              sx={{ py: 1.5, mb: 3, fontSize: '1rem' }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+            </Button>
+
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
                 Don't have an account?{' '}
-                <Link href={ROUTES.SIGNUP} underline="hover">
-                  Sign up
+                <Link href="/auth/register" style={{ textDecoration: 'none', color: '#4F46E5', fontWeight: 600 }}>
+                  Sign Up
                 </Link>
               </Typography>
-            </form>
-          </CardContent>
-        </Card>
+            </Box>
+          </Box>
+        </Container>
       </Box>
-    </Container>
+    </Box>
   );
 }

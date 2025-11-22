@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import {
   Grid,
@@ -13,8 +14,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Edit, Save, Cancel, CameraAlt } from '@mui/icons-material';
-import { DashboardLayout } from '@/layouts/DashboardLayout';
-import { PageHeader } from '@/components/common/PageHeader';
+import PageHeader from '@/app/components/common/PageHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { userService } from '@/services/userService';
@@ -22,7 +22,7 @@ import { userService } from '@/services/userService';
 export default function ProfilePage() {
   const { user } = useAuth();
   const { showSnackbar } = useSnackbar();
-  
+
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -78,7 +78,7 @@ export default function ProfilePage() {
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       showSnackbar('Passwords do not match', 'error');
       return;
@@ -104,7 +104,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <DashboardLayout>
+    <Box className="animate-fade-in">
       <PageHeader
         title="My Profile"
         subtitle="Manage your account settings and preferences"
@@ -121,7 +121,7 @@ export default function ProfilePage() {
               <Box sx={{ position: 'relative', display: 'inline-block' }}>
                 <Avatar
                   src={user?.avatar}
-                  sx={{ width: 120, height: 120, margin: '0 auto' }}
+                  sx={{ width: 120, height: 120, margin: '0 auto', bgcolor: 'primary.main', fontSize: '3rem' }}
                 >
                   {user?.name?.charAt(0)}
                 </Avatar>
@@ -131,6 +131,7 @@ export default function ProfilePage() {
                     bottom: 0,
                     right: 0,
                     backgroundColor: 'background.paper',
+                    boxShadow: 1
                   }}
                   component="label"
                 >
@@ -139,7 +140,7 @@ export default function ProfilePage() {
                 </IconButton>
               </Box>
 
-              <Typography variant="h6" sx={{ mt: 2 }}>
+              <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>
                 {user?.name}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -152,12 +153,13 @@ export default function ProfilePage() {
                   mt: 1,
                   px: 2,
                   py: 0.5,
-                  backgroundColor: 'primary.main',
-                  color: 'white',
+                  backgroundColor: 'primary.light',
+                  color: 'primary.main',
                   borderRadius: 1,
+                  fontWeight: 'bold'
                 }}
               >
-                {user?.role?.toUpperCase()}
+                {user?.role?.toUpperCase() || 'STUDENT'}
               </Typography>
             </CardContent>
           </Card>
@@ -167,7 +169,7 @@ export default function ProfilePage() {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h6">Personal Information</Typography>
+                <Typography variant="h6" fontWeight="bold">Personal Information</Typography>
                 {!editing ? (
                   <Button
                     startIcon={<Edit />}
@@ -180,7 +182,7 @@ export default function ProfilePage() {
                     <IconButton onClick={() => setEditing(false)}>
                       <Cancel />
                     </IconButton>
-                    <IconButton onClick={handleSave} disabled={loading}>
+                    <IconButton onClick={handleSave} disabled={loading} color="primary">
                       <Save />
                     </IconButton>
                   </Box>
@@ -236,7 +238,7 @@ export default function ProfilePage() {
 
           <Card sx={{ mt: 3 }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom fontWeight="bold">
                 Change Password
               </Typography>
               <Divider sx={{ mb: 3 }} />
@@ -286,6 +288,6 @@ export default function ProfilePage() {
           </Card>
         </Grid>
       </Grid>
-    </DashboardLayout>
+    </Box>
   );
 }

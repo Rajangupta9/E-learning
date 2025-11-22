@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ReduxProvider from "@/redux/ReduxProvider";
 import ThemeRegistry from "./ThemeRegistry";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeRegistry>{children}</ThemeRegistry>
+        <ReduxProvider>
+          <ThemeRegistry>{children}</ThemeRegistry>
+        </ReduxProvider>
       </body>
     </html>
   );
