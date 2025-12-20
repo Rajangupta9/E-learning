@@ -31,9 +31,9 @@ app.use(express.json());
 app.use(
   '/auth',
   createProxyMiddleware({
-    target: 'http://auth-service:4001',
+    target: 'http://localhost:4001',
     changeOrigin: true,
-    pathRewrite: { '^/auth': '' },
+    pathRewrite: { '^/auth': '' }, // Restored standard behavior
     logLevel: 'debug',
     onProxyReq: (proxyReq, req, res) => {
       console.log(`Proxying ${req.method} ${req.url} to auth-service`);
@@ -57,7 +57,7 @@ app.use(
 app.use(
   '/users',
   createProxyMiddleware({
-    target: 'http://user-service:4002',
+    target: 'http://localhost:4002',
     changeOrigin: true,
     pathRewrite: { '^/users': '' },
   }),
@@ -65,7 +65,7 @@ app.use(
 app.use(
   '/orgs',
   createProxyMiddleware({
-    target: 'http://organization-service:4003',
+    target: 'http://localhost:4003',
     changeOrigin: true,
     pathRewrite: { '^/orgs': '' },
   }),
@@ -73,7 +73,7 @@ app.use(
 app.use(
   '/courses',
   createProxyMiddleware({
-    target: 'http://course-service:7001',
+    target: 'http://localhost:7001',
     changeOrigin: true,
     pathRewrite: { '^/courses': '' },
   }),
@@ -81,7 +81,7 @@ app.use(
 app.use(
   '/content',
   createProxyMiddleware({
-    target: 'http://content-service:4005',
+    target: 'http://localhost:4005',
     changeOrigin: true,
     pathRewrite: { '^/content': '' },
   }),
@@ -89,7 +89,7 @@ app.use(
 app.use(
   '/assessments',
   createProxyMiddleware({
-    target: 'http://assessment-service:4006',
+    target: 'http://localhost:4006',
     changeOrigin: true,
     pathRewrite: { '^/assessments': '' },
   }),
@@ -97,7 +97,7 @@ app.use(
 app.use(
   '/enrollments',
   createProxyMiddleware({
-    target: 'http://enrollment-service:4007',
+    target: 'http://localhost:4007',
     changeOrigin: true,
     pathRewrite: { '^/enrollments': '' },
   }),
@@ -105,7 +105,7 @@ app.use(
 app.use(
   '/payments',
   createProxyMiddleware({
-    target: 'http://payment-service:4008',
+    target: 'http://localhost:4008',
     changeOrigin: true,
     pathRewrite: { '^/payments': '' },
   }),
@@ -113,7 +113,7 @@ app.use(
 app.use(
   '/notifications',
   createProxyMiddleware({
-    target: 'http://notification-service:4009',
+    target: 'http://localhost:4009',
     changeOrigin: true,
     pathRewrite: { '^/notifications': '' },
   }),
@@ -121,7 +121,7 @@ app.use(
 app.use(
   '/analytics',
   createProxyMiddleware({
-    target: 'http://analytics-service:6001',
+    target: 'http://localhost:6001',
     changeOrigin: true,
     pathRewrite: { '^/analytics': '' },
   }),
@@ -129,7 +129,7 @@ app.use(
 app.use(
   '/realtime',
   createProxyMiddleware({
-    target: 'http://real-time-service:4010',
+    target: 'http://localhost:4010',
     changeOrigin: true,
     pathRewrite: { '^/realtime': '' },
   }),
@@ -137,7 +137,7 @@ app.use(
 app.use(
   '/search',
   createProxyMiddleware({
-    target: 'http://search-service:4011',
+    target: 'http://localhost:4011',
     changeOrigin: true,
     pathRewrite: { '^/search': '' },
   }),
@@ -145,7 +145,7 @@ app.use(
 app.use(
   '/integrations',
   createProxyMiddleware({
-    target: 'http://integration-service:4012',
+    target: 'http://localhost:4012',
     changeOrigin: true,
     pathRewrite: { '^/integrations': '' },
   }),
@@ -153,7 +153,7 @@ app.use(
 app.use(
   '/ai',
   createProxyMiddleware({
-    target: 'http://ai-service:5001',
+    target: 'http://localhost:5001',
     changeOrigin: true,
     pathRewrite: { '^/ai': '' },
   }),
@@ -161,7 +161,7 @@ app.use(
 app.use(
   '/rustsvc',
   createProxyMiddleware({
-    target: 'http://rust-service:8001',
+    target: 'http://localhost:8001',
     changeOrigin: true,
     pathRewrite: { '^/rustsvc': '' },
   }),

@@ -1,11 +1,20 @@
 import { Router } from 'express';
-import { register, login, getMe, updateProfile, updatePassword } from '../controllers/auth.controller';
+import {
+  register,
+  login,
+  getMe,
+  updateProfile,
+  updatePassword,
+} from '../controllers/auth.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.get('/health', (req, res) => {
+  res.json({ status: 'up', service: 'auth-service' });
+});
 
 router.get('/me', authenticateToken, getMe);
 router.put('/profile', authenticateToken, updateProfile);
