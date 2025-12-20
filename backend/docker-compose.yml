@@ -1,25 +1,147 @@
 version: "3.9"
 services:
+  # Infrastructure
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-elearn}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-StrongPass123}
+      - POSTGRES_DB=${POSTGRES_DB:-elearn}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  # Services
   gateway:
     build: ./gateway
     ports:
       - "4000:4000"
     depends_on:
       - auth-service
+      - user-service
       - course-service
-      - ai-service
+      - organization-service
+      - content-service
+      - assessment-service
+      - enrollment-service
+      - payment-service
+      - notification-service
       - analytics-service
+      - real-time-service
+      - search-service
+      - integration-service
+      - ai-service
       - rust-service
 
   auth-service:
     build: ./services/auth-service
     ports:
       - "4001:4001"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-elearn}:${POSTGRES_PASSWORD:-StrongPass123}@postgres:5432/${POSTGRES_DB:-elearn}?schema=public
+    depends_on:
+      - postgres
+
+  user-service:
+    build: ./services/user-service
+    ports:
+      - "4002:4002"
+    depends_on:
+      - postgres
+
+  organization-service:
+    build: ./services/organization-service
+    ports:
+      - "4003:4003"
+    depends_on:
+      - postgres
 
   course-service:
     build: ./services/course-service
     ports:
       - "7001:7001"
+    depends_on:
+      - postgres
+      - redis
+
+  content-service:
+    build: ./services/content-service
+    ports:
+      - "4005:4005"
+    depends_on:
+      - postgres
+
+  assessment-service:
+    build: ./services/assessment-service
+    ports:
+      - "4006:4006"
+    depends_on:
+      - postgres
+
+  enrollment-service:
+    build: ./services/enrollment-service
+    ports:
+      - "4007:4007"
+    depends_on:
+      - postgres
+
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "4008:4008"
+    depends_on:
+      - postgres
+
+  notification-service:
+    build: ./services/notification-service
+    ports:
+      - "4009:4009"
+    depends_on:
+      - redis
+
+  analytics-service:
+    build: ./services/analytics-service
+    ports:
+      - "6001:6001"
+    depends_on:
+      - postgres
+
+  real-time-service:
+    build: ./services/real-time-service
+    ports:
+      - "4010:4010"
+    depends_on:
+      - redis
+
+  search-service:
+    build: ./services/search-service
+    ports:
+      - "4011:4011"
+    depends_on:
+      - elasticsearch
+
+  integration-service:
+    build: ./services/integration-service
+    ports:
+      - "4012:4012"
 
   ai-service:
     build: ./services/ai-service
@@ -28,12 +150,12 @@ services:
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
 
-  analytics-service:
-    build: ./services/analytics-service
-    ports:
-      - "6001:6001"
-
   rust-service:
     build: ./services/rust-service
     ports:
       - "8001:8001"
+
+volumes:
+  postgres_data:
+  redis_data:
+  es_data:
