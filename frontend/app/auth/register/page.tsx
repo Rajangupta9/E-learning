@@ -39,6 +39,7 @@ export default function RegisterPage() {
     };
 
     return (
+        // nilakshi first pr raise learnig
         <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.default' }}>
             {/* Left Side - Image/Brand */}
             <Box sx={{
